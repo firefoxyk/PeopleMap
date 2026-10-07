@@ -40,12 +40,39 @@ function initStatus() {
   const root = document.querySelector("[data-status-selector]");
   if (!root) return;
   const current = root.querySelector("[data-current-status]");
-  root.querySelectorAll("[data-status]").forEach(button => button.addEventListener("click", () => {
-    root.querySelectorAll("[data-status]").forEach(item => { item.classList.remove("active"); item.setAttribute("aria-pressed", "false"); item.querySelector("em").textContent = ""; });
-    button.classList.add("active"); button.setAttribute("aria-pressed", "true"); button.querySelector("em").textContent = "✓";
-    current.className = `status-current ${button.classList[0]}`; current.innerHTML = `<i></i>${button.dataset.status}`;
-    track("feature_interaction", { section: "relationship_status", element: "status", value: button.dataset.status });
-  }));
+  const options = [...root.querySelectorAll("[data-status]")];
+  const statuses = {
+    "Trusted": { modifier: "status-trusted" },
+    "On hold": { modifier: "status-hold" },
+    "Problematic": { modifier: "status-problematic" },
+    "Unrated": { modifier: "status-unrated" }
+  };
+  const selectStatus = (button, moveFocus = false) => {
+    const label = button.dataset.status;
+    const status = statuses[label];
+    if (!status) return;
+
+    options.forEach(item => {
+      const selected = item === button;
+      item.classList.toggle("active", selected);
+      item.setAttribute("aria-pressed", String(selected));
+      item.querySelector("em").textContent = selected ? "✓" : "";
+    });
+    current.className = `status-current ${status.modifier}`;
+    current.innerHTML = `<i></i>${label}`;
+    if (moveFocus) button.focus();
+    track("feature_interaction", { section: "relationship_status", element: "status", value: label });
+  };
+
+  options.forEach(button => button.addEventListener("click", () => selectStatus(button)));
+  root.querySelector("fieldset").addEventListener("keydown", event => {
+    if (!["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const currentIndex = Math.max(0, options.indexOf(document.activeElement));
+    const nextIndex = event.key === "Home" ? 0 : event.key === "End" ? options.length - 1 :
+      ["ArrowDown", "ArrowRight"].includes(event.key) ? (currentIndex + 1) % options.length : (currentIndex - 1 + options.length) % options.length;
+    selectStatus(options[nextIndex], true);
+  });
 }
 
 function initFilters() {
