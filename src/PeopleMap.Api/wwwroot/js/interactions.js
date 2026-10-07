@@ -76,42 +76,116 @@ function initStatus() {
 }
 
 function initFilters() {
-  const root = document.querySelector("[data-filter-builder]");
-  if (!root) return;
-  const count = root.querySelector("[data-result-count]");
-  const label = root.querySelector("[data-result-label]");
-  let noTags = false;
-  const update = () => {
-    if (noTags) { count.textContent = "31 people"; label.textContent = "have no tags yet"; return; }
-    const active = root.querySelectorAll("[data-filter]:not(.removed)").length;
-    count.textContent = `${active ? Math.max(7, 47 - active * 6) : 84} people`; label.textContent = "match your filters";
-  };
-  root.querySelectorAll("[data-filter]").forEach(token => token.addEventListener("click", () => {
-    token.classList.toggle("removed"); token.style.display = token.classList.contains("removed") ? "none" : "";
-    update(); track("feature_interaction", { section: "filters", element: "filter", value: token.dataset.filter });
-  }));
-  root.querySelectorAll("[data-operator]").forEach(operator => {
-    operator.dataset.logic = operator.textContent.trim();
-    operator.addEventListener("click", () => {
-      const values = ["AND", "OR", "NOT"]; operator.textContent = values[(values.indexOf(operator.textContent.trim()) + 1) % values.length];
-      operator.dataset.logic = operator.textContent;
-      track("feature_interaction", { section: "filters", element: "operator", value: operator.textContent });
+    const root = document.querySelector("[data-filter-builder]");
+    if (!root) return;
+    const count = root.querySelector("[data-result-count]");
+    const label = root.querySelector("[data-result-label]");
+    const line = root.querySelector(".filter-line");
+    const addButton = root.querySelector("[data-add-filter]");
+    let noTags = false;
+    let activeConditions = [];
+    const removedConditions = [];
+
+    const configureOperator = operator => {
+      if (operator.dataset.operatorReady === "true") return;
+      operator.dataset.operatorReady = "true";
+      operator.dataset.logic = operator.textContent.trim();
+      operator.addEventListener("click", () => {
+        const values = ["AND", "OR", "NOT"];
+        const next = values[(values.indexOf(operator.dataset.logic) + 1) % values.length];
+        operator.textContent = next;
+        operator.dataset.logic = next;
+        track("feature_interaction", { section: "filters", element: "operator", value: next });
+      });
+    };
+
+    const createOperator = () => {
+      const operator = document.createElement("button");
+      operator.type = "button";
+      operator.className = "operator";
+      operator.dataset.operator = "";
+      operator.textContent = "AND";
+      configureOperator(operator);
+      return operator;
+    };
+
+    const initialConditions = [];
+    let precedingOperator = null;
+    [...line.children].forEach(element => {
+      if (element.matches("[data-operator]")) {
+        configureOperator(element);
+        precedingOperator = element;
+      } else if (element.matches("[data-filter]")) {
+        initialConditions.push({
+          chip: element,
+          connector: initialConditions.length ? precedingOperator : null,
+          initialLogic: precedingOperator?.dataset.logic ?? null
+        });
+        precedingOperator = null;
+      }
     });
-  });
-  root.querySelector("[data-reset-filter]").addEventListener("click", () => {
-    noTags = false; root.classList.remove("no-tags-mode");
-    root.querySelectorAll("[data-quick-filter]").forEach(button => { const active = button.dataset.quickFilter === "all"; button.classList.toggle("active", active); button.setAttribute("aria-pressed", String(active)); });
-    root.querySelectorAll("[data-filter]").forEach(token => { token.classList.remove("removed"); token.style.display = ""; }); update();
-  });
-  root.querySelector("[data-add-filter]").addEventListener("click", () => {
-    const removed = root.querySelector("[data-filter].removed"); if (removed) { removed.classList.remove("removed"); removed.style.display = ""; update(); }
-  });
-  root.querySelectorAll("[data-quick-filter]").forEach(button => button.addEventListener("click", () => {
-    noTags = button.dataset.quickFilter === "no-tags";
-    root.classList.toggle("no-tags-mode", noTags);
-    root.querySelectorAll("[data-quick-filter]").forEach(item => { const active = item === button; item.classList.toggle("active", active); item.setAttribute("aria-pressed", String(active)); });
-    update(); track("feature_interaction", { section: "filters", element: "quick_filter", value: button.dataset.quickFilter });
-  }));
+    activeConditions = [...initialConditions];
+
+    const renderExpression = () => {
+      const fragment = document.createDocumentFragment();
+      activeConditions.forEach((condition, index) => {
+        if (index > 0) {
+          condition.connector ??= createOperator();
+          fragment.append(condition.connector);
+        }
+        fragment.append(condition.chip);
+      });
+      fragment.append(addButton);
+      line.replaceChildren(fragment);
+    };
+
+    const update = () => {
+      if (noTags) { count.textContent = "31 people"; label.textContent = "have no tags yet"; return; }
+      const active = activeConditions.length;
+      count.textContent = `${active ? Math.max(7, 47 - active * 6) : 84} people`; label.textContent = "match your filters";
+    };
+
+    initialConditions.forEach(condition => condition.chip.addEventListener("click", () => {
+      const index = activeConditions.indexOf(condition);
+      if (index < 0) return;
+      activeConditions.splice(index, 1);
+      removedConditions.push(condition);
+      renderExpression();
+      update();
+      track("feature_interaction", { section: "filters", element: "filter", value: condition.chip.dataset.filter });
+    }));
+
+    root.querySelector("[data-reset-filter]").addEventListener("click", () => {
+      noTags = false; root.classList.remove("no-tags-mode");
+      root.querySelectorAll("[data-quick-filter]").forEach(button => { const active = button.dataset.quickFilter === "all"; button.classList.toggle("active", active); button.setAttribute("aria-pressed", String(active)); });
+      initialConditions.forEach(condition => {
+        if (!condition.connector || !condition.initialLogic) return;
+        condition.connector.textContent = condition.initialLogic;
+        condition.connector.dataset.logic = condition.initialLogic;
+      });
+      activeConditions = [...initialConditions];
+      removedConditions.length = 0;
+      renderExpression();
+      update();
+    });
+
+    addButton.addEventListener("click", () => {
+      const condition = removedConditions.pop();
+      if (!condition) return;
+      if (activeConditions.length && !condition.connector) condition.connector = createOperator();
+      activeConditions.push(condition);
+      renderExpression();
+      update();
+    });
+
+    root.querySelectorAll("[data-quick-filter]").forEach(button => button.addEventListener("click", () => {
+      noTags = button.dataset.quickFilter === "no-tags";
+      root.classList.toggle("no-tags-mode", noTags);
+      root.querySelectorAll("[data-quick-filter]").forEach(item => { const active = item === button; item.classList.toggle("active", active); item.setAttribute("aria-pressed", String(active)); });
+      update(); track("feature_interaction", { section: "filters", element: "quick_filter", value: button.dataset.quickFilter });
+    }));
+
+    renderExpression();
 }
 
 function initPeopleBrowser() {
