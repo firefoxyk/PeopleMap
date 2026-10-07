@@ -90,10 +90,14 @@ function initFilters() {
     token.classList.toggle("removed"); token.style.display = token.classList.contains("removed") ? "none" : "";
     update(); track("feature_interaction", { section: "filters", element: "filter", value: token.dataset.filter });
   }));
-  root.querySelectorAll("[data-operator]").forEach(operator => operator.addEventListener("click", () => {
-    const values = ["AND", "OR", "NOT"]; operator.textContent = values[(values.indexOf(operator.textContent.trim()) + 1) % values.length];
-    track("feature_interaction", { section: "filters", element: "operator", value: operator.textContent });
-  }));
+  root.querySelectorAll("[data-operator]").forEach(operator => {
+    operator.dataset.logic = operator.textContent.trim();
+    operator.addEventListener("click", () => {
+      const values = ["AND", "OR", "NOT"]; operator.textContent = values[(values.indexOf(operator.textContent.trim()) + 1) % values.length];
+      operator.dataset.logic = operator.textContent;
+      track("feature_interaction", { section: "filters", element: "operator", value: operator.textContent });
+    });
+  });
   root.querySelector("[data-reset-filter]").addEventListener("click", () => {
     noTags = false; root.classList.remove("no-tags-mode");
     root.querySelectorAll("[data-quick-filter]").forEach(button => { const active = button.dataset.quickFilter === "all"; button.classList.toggle("active", active); button.setAttribute("aria-pressed", String(active)); });

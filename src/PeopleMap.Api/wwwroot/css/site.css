@@ -55,6 +55,7 @@ html{scroll-padding-top:88px}.section[id]{scroll-margin-top:88px}
 
 /* Final hero viewport refinement */
 .status-badge i,.status-current i,.mini-status i{color:inherit}
+.operator{border-radius:7px;transition:color .18s ease,background-color .18s ease}.operator[data-logic="AND"]{color:#a8c788}.operator[data-logic="OR"]{color:#a6aaa1}.operator[data-logic="NOT"]{color:#d68e84}.operator:hover{background:rgba(255,255,255,.055)}.operator:focus-visible{outline-color:currentColor}
 .hero-copy{top:-78px}
 .hero h1{margin-bottom:18px}
 .hero-lede{line-height:1.42}
