@@ -29,6 +29,19 @@ check("saved view sorting", savedViewSort.value === "oldest");
 document.querySelector("[data-quick-filter='no-tags']").click();
 check("filters", document.querySelector("[data-result-count]").textContent === "31 people");
 
+document.querySelector("[data-quick-filter='all']").click();
+const filterLine = document.querySelector(".filter-line");
+const filterSequence = () => [...filterLine.children]
+  .filter(node => node.matches("[data-filter], [data-operator]"))
+  .map(node => node.hasAttribute("data-filter") ? node.dataset.filter : node.dataset.logic);
+const trustedFilter = filterLine.querySelector('[data-filter="TRUSTED"]');
+trustedFilter.previousElementSibling.click();
+check("filter removal setup", filterSequence().join(" ") === "WORK AND NEW YORK OR TRUSTED NOT FORMER");
+trustedFilter.click();
+const sequenceAfterRemoval = filterSequence();
+check("middle filter removal sequence", sequenceAfterRemoval.join(" ") === "WORK AND NEW YORK NOT FORMER");
+check("no adjacent filter operators", !sequenceAfterRemoval.some((item, index) => ["AND", "OR", "NOT"].includes(item) && ["AND", "OR", "NOT"].includes(sequenceAfterRemoval[index + 1])));
+
 document.querySelector("[data-graph-filter='work']").click();
 check("relationship graph", document.querySelector("[data-graph-filter='work']").classList.contains("active") && document.querySelectorAll("[data-graph] .hidden").length > 0);
 

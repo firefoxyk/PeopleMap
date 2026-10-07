@@ -156,6 +156,7 @@ static async Task AssertMiddleFilterRemovalInBrowser(string baseUrl, int viewpor
                 const nodes = [...line.children].filter(node => node.matches('[data-filter], [data-operator]'));
                 const kinds = nodes.map(node => node.hasAttribute('data-filter') ? 'filter' : 'operator');
                 return {
+                  sequence: nodes.map(node => node.hasAttribute('data-filter') ? node.dataset.filter : node.dataset.logic),
                   filterCount: kinds.filter(kind => kind === 'filter').length,
                   operatorCount: kinds.filter(kind => kind === 'operator').length,
                   adjacentOperators: kinds.some((kind, index) => kind === 'operator' && kinds[index + 1] === 'operator'),
@@ -164,7 +165,10 @@ static async Task AssertMiddleFilterRemovalInBrowser(string baseUrl, int viewpor
                 };
               };
 
-              line.querySelector('[data-filter="TRUSTED"]').click();
+              const trusted = line.querySelector('[data-filter="TRUSTED"]');
+              trusted.previousElementSibling.click();
+              const exactInitialSequence = inspect().sequence;
+              trusted.click();
               const middle = inspect();
               const middleRemoved = !line.querySelector('[data-filter="TRUSTED"]');
               const resultCount = document.querySelector('[data-result-count]').textContent.trim();
@@ -204,6 +208,7 @@ static async Task AssertMiddleFilterRemovalInBrowser(string baseUrl, int viewpor
               return {
                 middleRemoved,
                 middle,
+                exactInitialSequence,
                 resultCount,
                 firstValid: first.structurallyValid && first.filterCount === 3 && first.operatorCount === 2,
                 lastValid: last.structurallyValid && last.filterCount === 3 && last.operatorCount === 2,
@@ -247,6 +252,8 @@ static async Task AssertMiddleFilterRemovalInBrowser(string baseUrl, int viewpor
         var value = response.RootElement.GetProperty("result").GetProperty("result").GetProperty("value");
         Assert(value.GetProperty("middleRemoved").GetBoolean(), "Middle filter is removed from the expression DOM.");
         var middle = value.GetProperty("middle");
+        AssertSequence(value.GetProperty("exactInitialSequence"), ["WORK", "AND", "NEW YORK", "OR", "TRUSTED", "NOT", "FORMER"], "Regression setup uses the exact four-condition expression.");
+        AssertSequence(middle.GetProperty("sequence"), ["WORK", "AND", "NEW YORK", "NOT", "FORMER"], "Removing TRUSTED removes its preceding OR connector and preserves FORMER's NOT connector.");
         Assert(!middle.GetProperty("adjacentOperators").GetBoolean(), "Removing a middle filter leaves no adjacent operators.");
         Assert(middle.GetProperty("structurallyValid").GetBoolean(), "The remaining filter expression alternates chips and operators.");
         Assert(middle.GetProperty("logicSynchronized").GetBoolean(), "Operator labels and data-logic values remain synchronized.");
@@ -269,4 +276,10 @@ static async Task AssertMiddleFilterRemovalInBrowser(string baseUrl, int viewpor
         catch (IOException) { }
         catch (UnauthorizedAccessException) { }
     }
+}
+
+static void AssertSequence(JsonElement actual, string[] expected, string message)
+{
+    var values = actual.EnumerateArray().Select(item => item.GetString()).ToArray();
+    Assert(values.SequenceEqual(expected), $"{message} Actual: {string.Join(" ", values)}");
 }

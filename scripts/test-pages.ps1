@@ -7,7 +7,7 @@ $ErrorActionPreference = "Stop"
 $repositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
 $previewRoot = Join-Path $repositoryRoot ".pages-preview"
 $siteRoot = Join-Path $previewRoot "PeopleMap"
-$profileRoot = Join-Path $repositoryRoot ".browser-profile"
+$profileRoot = Join-Path ([IO.Path]::GetTempPath()) "peoplemap-pages-$([Guid]::NewGuid().ToString('N'))"
 
 if (!(Test-Path -LiteralPath $BrowserPath -PathType Leaf)) {
     throw "Browser not found: $BrowserPath"
@@ -20,7 +20,9 @@ $indexPath = Join-Path $siteRoot "index.html"
 $html = [IO.File]::ReadAllText($indexPath)
 $probe = '<script>window.__peopleMapTest={calls:[],errors:[]};window.fetch=(...args)=>{window.__peopleMapTest.calls.push(String(args[0]));return Promise.reject(new Error("Unexpected fetch"))};navigator.sendBeacon=(url)=>{window.__peopleMapTest.calls.push(String(url));return false};addEventListener("error",event=>window.__peopleMapTest.errors.push(event.message));addEventListener("unhandledrejection",event=>window.__peopleMapTest.errors.push(String(event.reason)));</script>'
 $runner = '<pre id="browser-smoke-result">pending</pre><script type="module" src="./js/pages-browser-smoke.js"></script>'
-$html = $html.Replace('<script type="module" src="./js/app.js"></script>', "$probe`r`n  <script type=`"module`" src=`"./js/app.js`"></script>")
+$appScript = [regex]::Match($html, '<script type="module" src="\./js/app\.js\?v=[a-f0-9]+"></script>')
+if (!$appScript.Success) { throw "Versioned Pages application entry point was not found." }
+$html = $html.Replace($appScript.Value, "$probe`r`n  $($appScript.Value)")
 $html = $html.Replace("</body>", "$runner`r`n</body>")
 [IO.File]::WriteAllText($indexPath, $html, [Text.UTF8Encoding]::new($false))
 
@@ -46,7 +48,7 @@ try {
         $browserProfile = Join-Path $profileRoot $size.Replace(',', '-')
         $stdoutPath = Join-Path $previewRoot "edge-$($size.Replace(',', '-')).html"
         $stderrPath = Join-Path $previewRoot "edge-$($size.Replace(',', '-')).log"
-        $arguments = @("--headless=new", "--disable-gpu", "--no-first-run", "--no-default-browser-check", "--user-data-dir=$browserProfile", "--window-size=$size", "--force-device-scale-factor=1", "--virtual-time-budget=3000", "--dump-dom", $url)
+        $arguments = @("--headless=new", "--disable-gpu", "--no-sandbox", "--no-first-run", "--no-default-browser-check", "--user-data-dir=$browserProfile", "--window-size=$size", "--force-device-scale-factor=1", "--virtual-time-budget=3000", "--dump-dom", $url)
         $browser = Start-Process $BrowserPath -ArgumentList $arguments -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath -PassThru -WindowStyle Hidden
         if (!$browser.WaitForExit(20000)) { $browser.Kill(); throw "Browser timed out for $size." }
         $browser.WaitForExit()
@@ -68,4 +70,5 @@ try {
 finally {
     if (!$server.HasExited) { Stop-Process -Id $server.Id -Force }
     $server.WaitForExit()
+    if (Test-Path -LiteralPath $profileRoot) { Remove-Item -LiteralPath $profileRoot -Recurse -Force }
 }
