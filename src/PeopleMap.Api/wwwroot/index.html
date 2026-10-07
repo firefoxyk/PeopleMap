@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PeopleMap turns contacts into a personal map of people, relationships, notes and context.">
+  <meta name="theme-color" content="#f7f6f2">
+  <title>PeopleMap — Remember everyone</title>
+  <link rel="stylesheet" href="./css/site.css">
+  <script type="module" src="./js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" data-header>
+    <a class="brand" href="#hero" aria-label="PeopleMap home">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span>PeopleMap</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="#profile">How it works</a>
+      <a class="nav-cta" href="#early-access" data-cta="header">Early access</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero section" id="hero" data-section="hero">
+      <div class="hero-copy reveal">
+        <p class="eyebrow"><span></span>A better memory for the people in your life</p>
+        <h1>Remember everyone.<br><em>And why they matter.</em></h1>
+        <p class="hero-lede">Turn your contacts into a personal system of people, context, tags and relationships.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#early-access" data-cta="hero">Get early access <span aria-hidden="true">→</span></a>
+          <a class="text-link" href="#profile">See how it works <span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+      <div class="hero-product reveal" aria-label="PeopleMap app preview">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="person-chip chip-one"><span class="mini-avatar rose">OK</span><span><b>Olivia Kim</b><small>Friend · Austin</small></span></div>
+        <div class="person-chip chip-two"><span class="mini-avatar blue">DK</span><span><b>Daniel Kim</b><small>Northstar</small></span></div>
+        <div class="phone phone-main">
+          <div class="phone-top"><span>9:41</span><i></i><span>•••</span></div>
+          <div class="app-head"><div><small>PEOPLE</small><h2>Good morning, Alex.</h2></div><button class="icon-button" aria-label="Add a person">+</button></div>
+          <label class="search-box"><span aria-hidden="true">⌕</span><input aria-label="Search people" placeholder="Name, note, place or tag"></label>
+          <div class="app-row-head"><b>Recently added</b><span>View all</span></div>
+          <div class="contact-list">
+            <article class="contact-row"><span class="avatar photo-emily">EC</span><div><b>Emily Carter</b><small>Design · London</small></div><span class="row-date">Today</span></article>
+            <article class="contact-row"><span class="avatar blue">DK</span><div><b>Daniel Kim</b><small>Work · New York</small></div><span class="row-date">Tue</span></article>
+            <article class="contact-row"><span class="avatar gold">OB</span><div><b>Olivia Brown</b><small>Friend · Austin</small></div><span class="row-date">Jun 8</span></article>
+          </div>
+          <div class="quick-card"><span class="quick-icon">⌁</span><div><small>SMART GROUP</small><b>People to reconnect with</b></div><strong>12</strong></div>
+          <div class="phone-nav"><span class="active">People</span><span>Map</span><span>Notes</span></div>
+        </div>
+      </div>
+      <p class="scroll-cue">A calmer way to stay connected <span>↓</span></p>
+    </section>
+
+    <section class="problem section" id="problem" data-section="problem">
+      <div class="section-copy centered reveal">
+        <p class="eyebrow">The problem</p>
+        <h2>2,436 contacts.<br><span>Who are they?</span></h2>
+        <p>Your phone remembers numbers.<br>You still have to remember everything else.</p>
+      </div>
+      <div class="contact-tunnel" aria-hidden="true">
+        <div class="tunnel-list muted"><span>Alex</span><span>Alex S.</span><span>Alex Smith</span><span>Andrew</span><span>Anna</span><span>Anna K.</span></div>
+        <div class="tunnel-list focus"><span>Chris</span><span>Chris</span><span>Daniel</span><span>Emily</span><span>James</span><span>Olivia</span></div>
+        <div class="context-answer"><span class="avatar photo-emily">EC</span><div><b>Emily Carter</b><small>Design lead from Northstar · London</small></div></div>
+      </div>
+    </section>
+
+    <section class="profile-section section" id="profile" data-section="profile">
+      <div class="split-layout">
+        <div class="section-copy reveal">
+          <p class="eyebrow">Rich profiles</p>
+          <h2>More than a name<br>and a number.</h2>
+          <p>Keep the small details that turn a contact into someone you actually remember.</p>
+        </div>
+        <div class="profile-card reveal">
+          <div class="profile-cover"></div>
+          <div class="profile-top"><span class="avatar avatar-xl photo-emily">EC</span><button class="more-button" aria-label="More profile options">•••</button></div>
+          <h3>Emily Carter</h3><p class="profile-role">Product designer · London</p>
+          <p class="profile-contact">emily@example.com · +44 7700 900128</p>
+          <div class="profile-meta-row"><div class="tags compact"><span class="tag tag-blue">WORK / NORTHSTAR</span><span class="tag tag-violet">DESIGN</span><span class="tag tag-sand">LONDON</span></div><span class="status-badge status-trusted"><i></i>Trusted</span></div>
+          <div class="profile-block"><small>HOW WE MET</small><p>Met while working at Northstar.</p><span>Added June 12, 2025</span></div>
+          <div class="profile-grid"><div><small>NOTES</small><p>Interested in accessibility.<br>Introduced me to Daniel.</p></div><div><small>CONNECTED TO</small><p><span class="tiny-face blue">D</span> Daniel Kim<br><span class="tiny-face dark">N</span> Northstar team</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tags-section section" id="hierarchical-tags" data-section="hierarchical_tags">
+      <div class="section-copy centered reveal"><p class="eyebrow">Hierarchical tags</p><h2>Organize people the way<br>your mind already works.</h2><p>Build a structure that starts broad and gets as specific as you need.</p></div>
+      <div class="hierarchy-workspace reveal" data-hierarchy>
+        <div class="hierarchy-panel">
+          <div class="workspace-head"><div><small>YOUR STRUCTURE</small><b>People tags</b></div><button type="button" data-add-custom-tag aria-label="Add a custom tag">+</button></div>
+          <div class="tag-tree" role="tree" aria-label="Hierarchical tags">
+            <div class="tree-branch open"><button type="button" class="tree-parent" data-branch="WORK" role="treeitem" aria-expanded="true"><span class="branch-icon blue"></span><b>Work</b><small>184</small></button>
+              <div class="tree-children" role="group">
+                <button type="button" data-branch="COMPANY / NORTHSTAR" role="treeitem"><span>Company</span><b>Northstar</b><small>42</small></button>
+                <button type="button" data-branch="COMPANY / ACME" role="treeitem"><span>Company</span><b>Acme</b><small>18</small></button>
+                <button type="button" class="active" data-branch="INDUSTRY / DESIGN" role="treeitem" aria-selected="true"><span>Industry</span><b>Design</b><small>67</small></button>
+                <button type="button" data-branch="INDUSTRY / TECH" role="treeitem"><span>Industry</span><b>Tech</b><small>51</small></button>
+                <button type="button" data-branch="LOCATION / LONDON" role="treeitem"><span>Location</span><b>London</b><small>29</small></button>
+              </div>
+            </div>
+            <div class="tree-branch"><button type="button" class="tree-parent" data-branch="PERSONAL" role="treeitem" aria-expanded="false"><span class="branch-icon rose"></span><b>Personal</b><small>326</small></button></div>
+            <div class="tree-branch custom-branch" hidden><button type="button" class="tree-parent" data-branch="MY TAG / COMMUNITY" role="treeitem"><span class="branch-icon green"></span><b>My tag</b><small>1</small></button></div>
+          </div>
+        </div>
+        <div class="hierarchy-preview">
+          <div class="preview-label"><span>APPLY TO CONTACT</span></div>
+          <div class="hierarchy-person"><span class="avatar avatar-lg photo-emily">EC</span><div><h3>Emily Carter</h3><p>Product designer · London</p></div></div>
+          <div class="applied-path"><small>SELECTED PATH</small><div aria-live="polite" data-selected-path><span>WORK</span><i>›</i><span>INDUSTRY</span><i>›</i><b>DESIGN</b></div></div>
+          <button class="apply-tag-button" type="button" data-apply-tag><span aria-hidden="true">+</span> Apply tag</button>
+          <p class="apply-confirmation" data-apply-confirmation role="status"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="status-section section" id="relationship-status" data-section="relationship_status">
+      <div class="split-layout">
+        <div class="section-copy reveal"><p class="eyebrow">Relationship status</p><h2>Know where<br>you stand.</h2><p>Tags describe who someone is. Status tells you where things stand.</p></div>
+        <div class="status-card reveal" data-status-selector>
+          <div class="status-person"><span class="avatar avatar-lg photo-emily">EC</span><div><h3>Emily Carter</h3><p>Work / Northstar · Design</p></div><span class="status-current status-trusted" data-current-status><i></i>Trusted</span></div>
+          <fieldset><legend>Relationship status</legend>
+            <button type="button" class="active status-trusted" data-status="Trusted" aria-pressed="true"><i></i><span><b>Trusted</b><small>Close and dependable</small></span><em>✓</em></button>
+            <button type="button" class="status-hold" data-status="On hold" aria-pressed="false"><i></i><span><b>On hold</b><small>Give this some space</small></span><em></em></button>
+            <button type="button" class="status-problematic" data-status="Problematic" aria-pressed="false"><i></i><span><b>Problematic</b><small>Approach with care</small></span><em></em></button>
+            <button type="button" class="status-unrated" data-status="Unrated" aria-pressed="false"><i></i><span><b>Unrated</b><small>No status yet</small></span><em></em></button>
+          </fieldset>
+          <p class="status-note">A separate signal—not another tag.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="views-section section" id="saved-views" data-section="saved_views">
+      <div class="section-copy centered reveal"><p class="eyebrow">Saved views</p><h2>One tap. A completely different<br>view of your contacts.</h2><p>Save the people, fields, status and sorting you want to see together.</p></div>
+      <div class="views-browser reveal" data-people-browser>
+        <div class="view-sidebar" role="tablist" aria-label="Saved contact views">
+          <div class="view-sidebar-head"><small>SAVED VIEWS</small><button type="button" aria-label="Create a saved view">+</button></div>
+          <button class="active" data-view="Business" role="tab" aria-selected="true"><span class="view-glyph">B</span><span><b>Business</b><small>Work tags · Trusted</small></span><em>84</em></button>
+          <button data-view="Personal" role="tab" aria-selected="false"><span class="view-glyph rose">P</span><span><b>Personal</b><small>Friends and family</small></span><em>326</em></button>
+          <button data-view="By area" role="tab" aria-selected="false"><span class="view-glyph sand">A</span><span><b>By area</b><small>Location visible</small></span><em>12</em></button>
+          <button data-view="Problematic" role="tab" aria-selected="false"><span class="view-glyph coral">!</span><span><b>Problematic</b><small>Status needs care</small></span><em>7</em></button>
+          <button data-view="Follow up" role="tab" aria-selected="false"><span class="view-glyph green">F</span><span><b>People to follow up</b><small>Priority · Recent</small></span><em>18</em></button>
+          <button data-view="Unsorted" role="tab" aria-selected="false"><span class="view-glyph slate">—</span><span><b>Unsorted</b><small>No tags yet</small></span><em>31</em></button>
+        </div>
+        <div class="view-content">
+          <div class="view-toolbar"><div><small>CURRENT VIEW</small><h3 data-view-title>Business</h3></div><label class="sort-control">Sort by <select aria-label="Sort saved view" data-sort><option value="recent">Recently added</option><option value="priority">Priority</option><option value="alpha">Alphabetical</option><option value="oldest">Oldest first</option></select></label></div>
+          <div class="view-rules"><span data-view-rule>WORK / COMPANY</span><i>+</i><span data-view-status>TRUSTED</span><button type="button" data-no-tags-filter aria-pressed="false">NO TAGS</button></div>
+          <div class="people-grid saved-view-grid" data-people-grid></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="filter-section section dark-section" id="filters" data-section="filters">
+      <div class="section-copy centered reveal"><p class="eyebrow">Search & filters</p><h2>Find exactly who<br>you're thinking of.</h2><p>Filter any saved view by structure, status or the details you remember.</p></div>
+      <div class="filter-builder reveal" data-filter-builder>
+        <div class="filter-top"><span>Filtering within <b>Business</b></span><div class="quick-filters" role="group" aria-label="Quick filters"><button class="active" type="button" data-quick-filter="all" aria-pressed="true">All</button><button type="button" data-quick-filter="no-tags" aria-pressed="false"><i></i>No tags</button><button type="button" data-reset-filter>Reset</button></div></div>
+        <div class="filter-line" aria-label="Interactive people filter">
+          <button class="filter-token token-blue" data-filter="WORK">WORK <span>×</span></button><button class="operator" data-operator>AND</button><button class="filter-token token-sand" data-filter="NEW YORK">NEW YORK <span>×</span></button><button class="operator" data-operator>AND</button><button class="filter-token token-trusted" data-filter="TRUSTED">TRUSTED <span>×</span></button><button class="operator not" data-operator>NOT</button><button class="filter-token token-muted" data-filter="FORMER">FORMER <span>×</span></button><button class="add-filter" data-add-filter aria-label="Add a filter">+</button>
+        </div>
+        <div class="result-line"><span class="pulse-dot"></span><strong data-result-count>23 people</strong><small data-result-label>match your filters</small><div class="result-faces"><span class="mini-avatar blue">DK</span><span class="mini-avatar rose">AS</span><span class="mini-avatar gold">MB</span><i>+20</i></div></div>
+      </div>
+    </section>
+
+    <section class="notes-section section" id="notes" data-section="notes">
+      <div class="split-layout reverse-mobile">
+        <div class="notes-visual reveal">
+          <div class="notes-person"><span class="avatar avatar-lg gold">JM</span><div><h3>James Miller</h3><p>Friend · Austin</p></div></div>
+          <div class="note-stack"><article style="--r:-2deg"><time>OCT 18</time><p>Met at a conference in Austin.</p></article><article style="--r:1.5deg"><time>NOV 02</time><p>Looking for a new CTO. Follow up about the project.</p></article><article style="--r:-1deg"><time>DEC 11</time><p>Has two kids. Recommended by Sarah.</p></article></div>
+        </div>
+        <div class="section-copy reveal"><p class="eyebrow">Personal notes</p><h2>Remember what your address book can't.</h2><p>Keep private context with the person it belongs to—not in a sales activity feed.</p></div>
+      </div>
+    </section>
+
+    <section class="relationships section dark-section" id="relationships" data-section="relationships">
+      <div class="section-copy centered reveal"><p class="eyebrow">Your people, connected</p><h2>See how the people<br>in your life connect.</h2></div>
+      <div class="graph-controls reveal" role="group" aria-label="Relationship type"><button class="active" data-graph-filter="all">All</button><button data-graph-filter="work">Work</button><button data-graph-filter="friends">Friends</button><button data-graph-filter="education">Education</button><button data-graph-filter="family">Family</button></div>
+      <div class="relationship-graph reveal" data-graph>
+        <svg class="graph-lines" viewBox="0 0 1000 590" preserveAspectRatio="none" aria-hidden="true">
+          <line data-type="work" x1="500" y1="295" x2="265" y2="130"/><line data-type="friends" x1="500" y1="295" x2="735" y2="125"/><line data-type="family" x1="500" y1="295" x2="815" y2="350"/><line data-type="education" x1="500" y1="295" x2="660" y2="500"/><line data-type="work" x1="500" y1="295" x2="205" y2="420"/><line data-type="friends" x1="735" y1="125" x2="815" y2="350"/><line data-type="work" x1="265" y1="130" x2="205" y2="420"/>
+        </svg>
+        <div class="graph-node central" style="--x:50%;--y:50%" data-type="all"><span class="avatar avatar-xl dark">YOU</span><b>You</b><small>2,436 connections</small></div>
+        <div class="graph-node" style="--x:26%;--y:21%" data-type="work"><span class="avatar blue">DK</span><b>Daniel Kim</b><small>Work</small></div>
+        <div class="graph-node" style="--x:74%;--y:20%" data-type="friends"><span class="avatar photo-emily">EC</span><b>Emily Carter</b><small>Friend</small></div>
+        <div class="graph-node" style="--x:81%;--y:59%" data-type="family"><span class="avatar rose">SC</span><b>Sarah Chen</b><small>Family</small></div>
+        <div class="graph-node" style="--x:66%;--y:84%" data-type="education"><span class="avatar gold">OB</span><b>Olivia Brown</b><small>University</small></div>
+        <div class="graph-node" style="--x:20%;--y:70%" data-type="work"><span class="avatar green">JW</span><b>James Wilson</b><small>Work</small></div>
+      </div>
+      <p class="graph-caption">Select a relationship type to focus your map.</p>
+    </section>
+
+    <section class="timeline-section section" id="timeline" data-section="timeline">
+      <div class="section-copy centered reveal"><p class="eyebrow">Looking back</p><h2>Your personal<br>timeline of people.</h2><p>See when someone became part of your life.</p></div>
+      <div class="timeline reveal" data-timeline>
+        <div class="timeline-controls"><button class="active" data-timeline-sort="recent">Recently added</button><button data-timeline-sort="oldest">Oldest</button></div>
+        <div class="timeline-years" data-timeline-years>
+          <article data-year="2026"><h3>2026</h3><div><span><i class="avatar blue">DK</i><b>Daniel Kim</b><small>January 24</small></span><span><i class="avatar photo-emily">EC</i><b>Emily Carter</b><small>January 12</small></span><span><i class="avatar gold">OB</i><b>Olivia Brown</b><small>January 03</small></span></div></article>
+          <article data-year="2025"><h3>2025</h3><div><span><i class="avatar green">JW</i><b>James Wilson</b><small>December 18</small></span><span><i class="avatar rose">SL</i><b>Sophia Lee</b><small>August 07</small></span></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="privacy-section section" id="privacy" data-section="privacy">
+      <div class="split-layout privacy-layout">
+        <div class="section-copy reveal"><p class="eyebrow">Local-first privacy</p><h2>Your people<br>stay yours.</h2><p>Your tags, notes, relationships and personal context stay on your device.</p><span class="privacy-footnote">Built around your phone contacts, with private app data kept separately.</span></div>
+        <div class="privacy-visual reveal" aria-label="Personal data stored locally on your device">
+          <div class="privacy-orbit"></div>
+          <div class="privacy-phone">
+            <div class="privacy-phone-top"><span>PeopleMap</span><i aria-hidden="true"></i></div>
+            <div class="local-vault"><span class="vault-icon" aria-hidden="true"><i></i></span><small>ON THIS DEVICE</small><h3>Your private context</h3><p>Tags · Notes · Status · Relationships</p></div>
+            <div class="local-records"><span><i class="tag-blue"></i>Hierarchical tags</span><span><i class="tag-green"></i>Relationship status</span><span><i class="tag-violet"></i>Personal notes</span></div>
+            <div class="system-link"><span class="link-dot"></span><div><small>LINKED TO</small><b>Phone contact · 0184</b></div><i>Local</i></div>
+          </div>
+          <span class="private-badge"><i aria-hidden="true"></i>Private by default</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="identities section" id="identities" data-section="identities">
+      <div class="split-layout">
+        <div class="section-copy reveal"><p class="eyebrow">Unified profile</p><h2>One person.<br>One place.</h2><p>Keep every way you know someone together, right where you expect it.</p></div>
+        <div class="identity-card reveal">
+          <div class="identity-head"><span class="avatar avatar-xl photo-emily">EC</span><div><h3>Emily Carter</h3><p>Product designer · London</p></div></div>
+          <div class="identity-list"><a href="tel:+12125550184"><span class="identity-icon">⌕</span><div><small>PHONE</small><b>+1 (212) 555-0184</b></div><i>↗</i></a><a href="mailto:emily@example.com"><span class="identity-icon">@</span><div><small>EMAIL</small><b>emily@example.com</b></div><i>↗</i></a><a href="#" data-demo-link="LinkedIn"><span class="identity-icon in">in</span><div><small>LINKEDIN</small><b>/in/emilycarter</b></div><i>↗</i></a><a href="#" data-demo-link="Telegram"><span class="identity-icon">↗</span><div><small>TELEGRAM</small><b>@emilycarter</b></div><i>↗</i></a><a href="#" data-demo-link="Instagram"><span class="identity-icon">◎</span><div><small>INSTAGRAM</small><b>@emily.makes</b></div><i>↗</i></a></div>
+          <p class="demo-link-status" data-demo-link-status role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta section" id="early-access" data-section="final_cta">
+      <div class="cta-glow" aria-hidden="true"></div>
+      <div class="section-copy centered reveal"><p class="eyebrow">Coming soon</p><h2>Your contacts could be<br>so much more useful.</h2><p>Join the PeopleMap early access list.</p>
+        <form class="signup-form" data-signup-form novalidate>
+          <label for="email">Email address</label><div class="input-row"><input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required><button class="button button-primary" type="submit">Join early access <span aria-hidden="true">→</span></button></div><p class="form-note">No spam. Just one note when PeopleMap is ready.</p><p class="form-status" data-form-status role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer><a class="brand" href="#hero"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>PeopleMap</span></a><p>A thoughtful place for everyone you know.</p><span>© <span data-current-year></span> PeopleMap</span></footer>
+</body>
+</html>
