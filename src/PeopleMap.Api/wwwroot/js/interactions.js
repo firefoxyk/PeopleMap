@@ -12,6 +12,28 @@ const people = [
   { name: "Noah Harris", initials: "NH", kind: "green", role: "Cousin", location: "Portland", tags: [], status: "Unrated", priority: 4, added: 1 }
 ];
 
+const filterContacts = [
+  { name: "Daniel Kim", initials: "DK", kind: "blue", tags: ["WORK"], location: "NEW YORK", status: "TRUSTED", former: false, hasTags: true },
+  { name: "Ava Stone", initials: "AS", kind: "rose", tags: ["WORK"], location: "NEW YORK", status: "TRUSTED", former: true, hasTags: true },
+  { name: "Marcus Bell", initials: "MB", kind: "gold", tags: ["WORK"], location: "NEW YORK", status: "ON HOLD", former: false, hasTags: true },
+  { name: "Priya Shah", initials: "PS", kind: "green", tags: ["WORK"], location: "LONDON", status: "TRUSTED", former: false, hasTags: true },
+  { name: "James Wilson", initials: "JW", kind: "green", tags: ["WORK"], location: "CHICAGO", status: "ON HOLD", former: true, hasTags: true },
+  { name: "Maya Brooks", initials: "MB", kind: "gold", tags: ["WORK"], location: "BROOKLYN", status: "PROBLEMATIC", former: false, hasTags: true },
+  { name: "Elena Ruiz", initials: "ER", kind: "rose", tags: ["WORK"], location: "NEW YORK", status: "PROBLEMATIC", former: true, hasTags: true },
+  { name: "Thomas Reed", initials: "TR", kind: "blue", tags: ["WORK"], location: "BOSTON", status: "TRUSTED", former: true, hasTags: true },
+  { name: "Nina Patel", initials: "NP", kind: "rose", tags: ["PERSONAL"], location: "NEW YORK", status: "TRUSTED", former: false, hasTags: true },
+  { name: "Leo Grant", initials: "LG", kind: "gold", tags: ["PERSONAL"], location: "NEW YORK", status: "ON HOLD", former: true, hasTags: true },
+  { name: "Sophia Lee", initials: "SL", kind: "rose", tags: ["PERSONAL"], location: "AUSTIN", status: "TRUSTED", former: false, hasTags: true },
+  { name: "Omar Diaz", initials: "OD", kind: "blue", tags: ["PERSONAL"], location: "NEW YORK", status: "PROBLEMATIC", former: false, hasTags: true },
+  { name: "Alex Morgan", initials: "AM", kind: "blue", tags: [], location: "SEATTLE", status: "UNRATED", former: false, hasTags: false },
+  { name: "Noah Harris", initials: "NH", kind: "green", tags: [], location: "PORTLAND", status: "UNRATED", former: true, hasTags: false },
+  { name: "Iris Cole", initials: "IC", kind: "gold", tags: [], location: "NEW YORK", status: "UNRATED", former: false, hasTags: false },
+  { name: "Grace Wu", initials: "GW", kind: "green", tags: ["COMMUNITY"], location: "CHICAGO", status: "TRUSTED", former: false, hasTags: true },
+  { name: "Sarah Park", initials: "SP", kind: "rose", tags: ["WORK"], location: "NEW YORK", status: "TRUSTED", former: false, hasTags: true },
+  { name: "Victor Chen", initials: "VC", kind: "blue", tags: ["WORK"], location: "NEW YORK", status: "TRUSTED", former: false, hasTags: true },
+  { name: "Claire Martin", initials: "CM", kind: "gold", tags: ["WORK"], location: "LONDON", status: "TRUSTED", former: false, hasTags: true }
+];
+
 function initHierarchy() {
   const root = document.querySelector("[data-hierarchy]");
   if (!root) return;
@@ -80,6 +102,7 @@ function initFilters() {
     if (!root) return;
     const count = root.querySelector("[data-result-count]");
     const label = root.querySelector("[data-result-label]");
+    const faces = root.querySelector(".result-faces");
     const line = root.querySelector(".filter-line");
     const addButton = root.querySelector("[data-add-filter]");
     let noTags = false;
@@ -95,6 +118,7 @@ function initFilters() {
         const next = values[(values.indexOf(operator.dataset.logic) + 1) % values.length];
         operator.textContent = next;
         operator.dataset.logic = next;
+        update();
         track("feature_interaction", { section: "filters", element: "operator", value: next });
       });
     };
@@ -139,10 +163,53 @@ function initFilters() {
       line.replaceChildren(fragment);
     };
 
+    const conditionMatches = (contact, filter) => {
+      if (filter === "WORK") return contact.tags.includes("WORK");
+      if (filter === "NEW YORK") return contact.location === "NEW YORK";
+      if (filter === "TRUSTED") return contact.status === "TRUSTED";
+      if (filter === "FORMER") return contact.former;
+      return false;
+    };
+
+    const evaluateExpression = () => {
+      if (noTags) return filterContacts.filter(contact => !contact.hasTags);
+      if (!activeConditions.length) return [...filterContacts];
+
+      let result = filterContacts.filter(contact => conditionMatches(contact, activeConditions[0].chip.dataset.filter));
+      activeConditions.slice(1).forEach(condition => {
+        const matches = contact => conditionMatches(contact, condition.chip.dataset.filter);
+        const logic = condition.connector?.dataset.logic ?? "AND";
+        if (logic === "AND") result = result.filter(matches);
+        else if (logic === "OR") {
+          const included = new Set(result);
+          result = filterContacts.filter(contact => included.has(contact) || matches(contact));
+        } else if (logic === "NOT") result = result.filter(contact => !matches(contact));
+      });
+      return result;
+    };
+
+    const renderPreview = result => {
+      faces.replaceChildren();
+      result.slice(0, 3).forEach(contact => {
+        const avatar = document.createElement("span");
+        avatar.className = `mini-avatar ${contact.kind}`;
+        avatar.textContent = contact.initials;
+        avatar.setAttribute("aria-label", contact.name);
+        faces.append(avatar);
+      });
+      const remaining = result.length - Math.min(3, result.length);
+      if (remaining > 0) {
+        const more = document.createElement("i");
+        more.textContent = `+${remaining}`;
+        faces.append(more);
+      }
+    };
+
     const update = () => {
-      if (noTags) { count.textContent = "31 people"; label.textContent = "have no tags yet"; return; }
-      const active = activeConditions.length;
-      count.textContent = `${active ? Math.max(7, 47 - active * 6) : 84} people`; label.textContent = "match your filters";
+      const result = evaluateExpression();
+      count.textContent = `${result.length} ${result.length === 1 ? "person" : "people"}`;
+      label.textContent = noTags ? "have no tags yet" : "match your filters";
+      renderPreview(result);
     };
 
     initialConditions.forEach(condition => condition.chip.addEventListener("click", () => {
@@ -186,6 +253,7 @@ function initFilters() {
     }));
 
     renderExpression();
+    update();
 }
 
 function initPeopleBrowser() {

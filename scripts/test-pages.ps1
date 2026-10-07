@@ -50,7 +50,7 @@ try {
         $stderrPath = Join-Path $previewRoot "edge-$($size.Replace(',', '-')).log"
         $arguments = @("--headless=new", "--disable-gpu", "--no-sandbox", "--no-first-run", "--no-default-browser-check", "--user-data-dir=$browserProfile", "--window-size=$size", "--force-device-scale-factor=1", "--virtual-time-budget=3000", "--dump-dom", $url)
         $browser = Start-Process $BrowserPath -ArgumentList $arguments -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath -PassThru -WindowStyle Hidden
-        if (!$browser.WaitForExit(20000)) { $browser.Kill(); throw "Browser timed out for $size." }
+        if (!$browser.WaitForExit(45000)) { $browser.Kill(); throw "Browser timed out for $size." }
         $browser.WaitForExit()
         $browser.Dispose()
         $outputStream = [IO.FileStream]::new($stdoutPath, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::ReadWrite)

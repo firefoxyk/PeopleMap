@@ -26,21 +26,69 @@ savedViewSort.value = "oldest";
 savedViewSort.dispatchEvent(new Event("change", { bubbles: true }));
 check("saved view sorting", savedViewSort.value === "oldest");
 
-document.querySelector("[data-quick-filter='no-tags']").click();
-check("filters", document.querySelector("[data-result-count]").textContent === "31 people");
-
-document.querySelector("[data-quick-filter='all']").click();
 const filterLine = document.querySelector(".filter-line");
+const resetFilter = document.querySelector("[data-reset-filter]");
+const resultCount = () => Number.parseInt(document.querySelector("[data-result-count]").textContent, 10);
+const removeFilter = filter => filterLine.querySelector(`[data-filter="${filter}"]`).click();
+const setLogic = (index, logic) => {
+  const operator = filterLine.querySelectorAll("[data-operator]")[index];
+  while (operator.dataset.logic !== logic) operator.click();
+};
 const filterSequence = () => [...filterLine.children]
   .filter(node => node.matches("[data-filter], [data-operator]"))
   .map(node => node.hasAttribute("data-filter") ? node.dataset.filter : node.dataset.logic);
+
+check("default filter count", resultCount() === 3);
+document.querySelector("[data-quick-filter='no-tags']").click();
+check("no tags filter count", resultCount() === 3);
+document.querySelector("[data-quick-filter='all']").click();
+
 const trustedFilter = filterLine.querySelector('[data-filter="TRUSTED"]');
 trustedFilter.previousElementSibling.click();
 check("filter removal setup", filterSequence().join(" ") === "WORK AND NEW YORK OR TRUSTED NOT FORMER");
+check("filter removal setup count", resultCount() === 9);
 trustedFilter.click();
 const sequenceAfterRemoval = filterSequence();
 check("middle filter removal sequence", sequenceAfterRemoval.join(" ") === "WORK AND NEW YORK NOT FORMER");
 check("no adjacent filter operators", !sequenceAfterRemoval.some((item, index) => ["AND", "OR", "NOT"].includes(item) && ["AND", "OR", "NOT"].includes(sequenceAfterRemoval[index + 1])));
+check("middle filter removal count", resultCount() === 4);
+
+resetFilter.click();
+setLogic(0, "OR");
+check("full expression OR count", resultCount() === 6);
+setLogic(0, "NOT");
+check("full expression NOT count", resultCount() === 2);
+
+resetFilter.click();
+removeFilter("TRUSTED");
+removeFilter("FORMER");
+check("WORK AND NEW YORK count", resultCount() === 6);
+setLogic(0, "OR");
+check("WORK OR NEW YORK count", resultCount() === 15);
+check("filter preview remainder", document.querySelector(".result-faces i")?.textContent === "+12");
+
+resetFilter.click();
+removeFilter("NEW YORK");
+removeFilter("FORMER");
+check("WORK AND TRUSTED count", resultCount() === 7);
+
+resetFilter.click();
+removeFilter("TRUSTED");
+removeFilter("FORMER");
+setLogic(0, "NOT");
+check("WORK NOT NEW YORK count", resultCount() === 5);
+
+resetFilter.click();
+removeFilter("TRUSTED");
+check("WORK AND NEW YORK NOT FORMER count", resultCount() === 4);
+
+resetFilter.click();
+removeFilter("WORK");
+removeFilter("NEW YORK");
+removeFilter("TRUSTED");
+removeFilter("FORMER");
+filterLine.querySelector("[data-add-filter]").click();
+check("re-added filter count", resultCount() === 6);
 
 document.querySelector("[data-graph-filter='work']").click();
 check("relationship graph", document.querySelector("[data-graph-filter='work']").classList.contains("active") && document.querySelectorAll("[data-graph] .hidden").length > 0);

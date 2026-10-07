@@ -152,6 +152,13 @@ static async Task AssertMiddleFilterRemovalInBrowser(string baseUrl, int viewpor
               }
               const reset = document.querySelector('[data-reset-filter]');
               const add = line.querySelector('[data-add-filter]');
+              const resultCount = document.querySelector('[data-result-count]');
+              const countValue = () => Number.parseInt(resultCount.textContent, 10);
+              const removeFilter = filter => line.querySelector(`[data-filter="${filter}"]`).click();
+              const setLogic = (index, logic) => {
+                const operator = line.querySelectorAll('[data-operator]')[index];
+                while (operator.dataset.logic !== logic) operator.click();
+              };
               const inspect = () => {
                 const nodes = [...line.children].filter(node => node.matches('[data-filter], [data-operator]'));
                 const kinds = nodes.map(node => node.hasAttribute('data-filter') ? 'filter' : 'operator');
@@ -168,12 +175,47 @@ static async Task AssertMiddleFilterRemovalInBrowser(string baseUrl, int viewpor
               const trusted = line.querySelector('[data-filter="TRUSTED"]');
               trusted.previousElementSibling.click();
               const exactInitialSequence = inspect().sequence;
+              const exactInitialCount = countValue();
               trusted.click();
               const middle = inspect();
               const middleRemoved = !line.querySelector('[data-filter="TRUSTED"]');
-              const resultCount = document.querySelector('[data-result-count]').textContent.trim();
+              const middleCount = countValue();
 
               reset.click();
+              const resetCount = countValue();
+              setLogic(0, 'OR');
+              const fullExpressionOrCount = countValue();
+              setLogic(0, 'NOT');
+              const fullExpressionNotCount = countValue();
+
+              reset.click();
+              removeFilter('TRUSTED');
+              removeFilter('FORMER');
+              const workAndNewYork = countValue();
+              setLogic(0, 'OR');
+              const workOrNewYork = countValue();
+              const previewRemainder = document.querySelector('.result-faces i')?.textContent;
+
+              reset.click();
+              removeFilter('NEW YORK');
+              removeFilter('FORMER');
+              const workAndTrusted = countValue();
+
+              reset.click();
+              removeFilter('TRUSTED');
+              removeFilter('FORMER');
+              setLogic(0, 'NOT');
+              const workNotNewYork = countValue();
+
+              reset.click();
+              removeFilter('TRUSTED');
+              const workAndNewYorkNotFormer = countValue();
+
+              document.querySelector('[data-quick-filter="no-tags"]').click();
+              const noTagsCount = countValue();
+              reset.click();
+              const resetAfterNoTagsCount = countValue();
+
               line.querySelector('[data-filter="WORK"]').click();
               const first = inspect();
 
@@ -195,6 +237,7 @@ static async Task AssertMiddleFilterRemovalInBrowser(string baseUrl, int viewpor
               const empty = inspect();
               add.click();
               const reAdded = inspect();
+              const reAddedCount = countValue();
 
               reset.click();
               line.querySelector('[data-filter="TRUSTED"]').click();
@@ -209,13 +252,26 @@ static async Task AssertMiddleFilterRemovalInBrowser(string baseUrl, int viewpor
                 middleRemoved,
                 middle,
                 exactInitialSequence,
-                resultCount,
+                exactInitialCount,
+                middleCount,
+                resetCount,
+                fullExpressionOrCount,
+                fullExpressionNotCount,
+                workAndNewYork,
+                workOrNewYork,
+                workAndTrusted,
+                workNotNewYork,
+                workAndNewYorkNotFormer,
+                noTagsCount,
+                resetAfterNoTagsCount,
+                previewRemainder,
                 firstValid: first.structurallyValid && first.filterCount === 3 && first.operatorCount === 2,
                 lastValid: last.structurallyValid && last.filterCount === 3 && last.operatorCount === 2,
                 sequentialValid: sequential.structurallyValid && sequential.filterCount === 2 && sequential.operatorCount === 1,
                 singleValid: single.structurallyValid && single.filterCount === 1 && single.operatorCount === 0,
                 emptyValid: empty.structurallyValid && empty.filterCount === 0 && empty.operatorCount === 0,
                 reAddValid: reAdded.structurallyValid && reAdded.filterCount === 1 && reAdded.operatorCount === 0,
+                reAddedCount,
                 cycleValid: new Set(cycle.map(item => item.label)).size === 3 && cycle.every(item => item.label === item.logic),
                 keyboardFocusable: document.activeElement === operator && operator instanceof HTMLButtonElement
               };
@@ -257,13 +313,26 @@ static async Task AssertMiddleFilterRemovalInBrowser(string baseUrl, int viewpor
         Assert(!middle.GetProperty("adjacentOperators").GetBoolean(), "Removing a middle filter leaves no adjacent operators.");
         Assert(middle.GetProperty("structurallyValid").GetBoolean(), "The remaining filter expression alternates chips and operators.");
         Assert(middle.GetProperty("logicSynchronized").GetBoolean(), "Operator labels and data-logic values remain synchronized.");
-        Assert(value.GetProperty("resultCount").GetString() == "29 people", "Result count reflects the active filters after removal.");
+        Assert(value.GetProperty("exactInitialCount").GetInt32() == 9, "WORK AND NEW YORK OR TRUSTED NOT FORMER returns 9 people.");
+        Assert(value.GetProperty("middleCount").GetInt32() == 4, "Removing middle TRUSTED recalculates WORK AND NEW YORK NOT FORMER to 4 people.");
+        Assert(value.GetProperty("resetCount").GetInt32() == 3, "Reset restores the default expression count of 3 people.");
+        Assert(value.GetProperty("fullExpressionOrCount").GetInt32() == 6, "WORK OR NEW YORK AND TRUSTED NOT FORMER returns 6 people.");
+        Assert(value.GetProperty("fullExpressionNotCount").GetInt32() == 2, "WORK NOT NEW YORK AND TRUSTED NOT FORMER returns 2 people.");
+        Assert(value.GetProperty("workAndNewYork").GetInt32() == 6, "WORK AND NEW YORK returns 6 people.");
+        Assert(value.GetProperty("workOrNewYork").GetInt32() == 15, "WORK OR NEW YORK returns 15 people.");
+        Assert(value.GetProperty("workAndTrusted").GetInt32() == 7, "WORK AND TRUSTED returns 7 people.");
+        Assert(value.GetProperty("workNotNewYork").GetInt32() == 5, "WORK NOT NEW YORK returns 5 people.");
+        Assert(value.GetProperty("workAndNewYorkNotFormer").GetInt32() == 4, "WORK AND NEW YORK NOT FORMER returns 4 people.");
+        Assert(value.GetProperty("noTagsCount").GetInt32() == 3, "No tags returns the 3 untagged demo contacts.");
+        Assert(value.GetProperty("resetAfterNoTagsCount").GetInt32() == 3, "Reset exits No tags and restores the expression result.");
+        Assert(value.GetProperty("previewRemainder").GetString() == "+12", "Preview remainder equals count minus the three visible avatars.");
         Assert(value.GetProperty("firstValid").GetBoolean(), "Removing the first filter leaves a valid expression.");
         Assert(value.GetProperty("lastValid").GetBoolean(), "Removing the last filter leaves a valid expression.");
         Assert(value.GetProperty("sequentialValid").GetBoolean(), "Sequential removals leave a valid expression.");
         Assert(value.GetProperty("singleValid").GetBoolean(), "One remaining filter has no operators.");
         Assert(value.GetProperty("emptyValid").GetBoolean(), "Removing every filter leaves a clean empty state.");
         Assert(value.GetProperty("reAddValid").GetBoolean(), "Adding a filter after removal restores a valid expression.");
+        Assert(value.GetProperty("reAddedCount").GetInt32() == 6, "Re-adding the removed FORMER filter recalculates to 6 people.");
         Assert(value.GetProperty("cycleValid").GetBoolean(), "Operator cycling keeps AND, OR, NOT labels and data-logic synchronized.");
         Assert(value.GetProperty("keyboardFocusable").GetBoolean(), "Filter operators remain native keyboard-focusable buttons.");
         }
